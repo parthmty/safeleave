@@ -39,6 +39,11 @@
 
 - **Full Static**: Remove the backend server and make the project fully static.
 
+### Team Members
+
+- Partha Maity ([@parthmty](https://www.github.com/parthmty))
+- Md. Javed Akhtar
+
 ### Contributing
 
 If you would like to contribute to this project, please fork the repository and submit a pull request. We welcome all contributions!
