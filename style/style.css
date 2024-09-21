@@ -736,6 +736,20 @@ main {
   font-weight: var(--bold);
 }
 
+.captchaBox {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.captcha {
+  border-radius: 10px;
+}
+
 /* green color of card styling */
 .cardG {
   background-color: #6f9d76;

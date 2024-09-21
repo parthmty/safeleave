@@ -31,8 +31,8 @@ let need;
 let isGoingBackAllowed = false;
 
 // **********************
-let vpass = "";
-const V_CHECK_PASS = "#WJocvli71816;";
+// let vpass = "";
+// const V_CHECK_PASS = "#WJocvli71816;";
 // **********************
 
 const queryString = window.location.search;
@@ -175,76 +175,74 @@ mode = history.state.page.includes("auto") ? "auto" : "manual";
 
 // ******************************************************
 
-autoCal.addEventListener("click", function () {
-  alert(
-    "Sorry for the inconvenience. This feature is currently disabled due to university instructions. In the meantime, please use the manual mode to calculate your leave."
-  );
-});
+// alert(
+//   "Sorry for the inconvenience. This feature is currently disabled due to university instructions. In the meantime, please use the manual mode to calculate your leave."
+// );
 
-let devHoldTimer = null;
-autoCal.addEventListener("mousedown", function (event) {
-  if (devHoldTimer) {
-    clearTimeout(devHoldTimer);
-  }
+// let devHoldTimer = null;
+// autoCal.addEventListener("mousedown", function (event) {
+//   if (devHoldTimer) {
+//     clearTimeout(devHoldTimer);
+//   }
 
-  devHoldTimer = setTimeout(function () {
-    const passCode = askForDevSpecialModePassword();
-    if (passCode) {
-      activateDevSpecialMode();
-    }
-  }, 10000);
-});
+//   devHoldTimer = setTimeout(function () {
+//     const passCode = askForDevSpecialModePassword();
+//     if (passCode) {
+//       activateDevSpecialMode();
+//     }
+//   }, 1000);
+// });
 
-body.addEventListener("mouseup", function () {
-  if (devHoldTimer) {
-    clearTimeout(devHoldTimer);
-  }
-});
+// body.addEventListener("mouseup", function () {
+//   if (devHoldTimer) {
+//     clearTimeout(devHoldTimer);
+//   }
+// });
 
 // For Mobile Devices
-autoCal.addEventListener("touchstart", function (event) {
-  if (devHoldTimer) {
-    clearTimeout(devHoldTimer);
-  }
+// autoCal.addEventListener("touchstart", function (event) {
+//   if (devHoldTimer) {
+//     clearTimeout(devHoldTimer);
+//   }
 
-  devHoldTimer = setTimeout(function () {
-    const passCode = askForDevSpecialModePassword();
-    if (passCode) {
-      activateDevSpecialMode();
-    }
-  }, 10000);
-});
+//   devHoldTimer = setTimeout(function () {
+//     const passCode = askForDevSpecialModePassword();
+//     if (passCode) {
+//       activateDevSpecialMode();
+//     }
+//   }, 10000);
+// });
 
-body.addEventListener("touchend", function () {
-  if (devHoldTimer) {
-    clearTimeout(devHoldTimer);
-  }
-});
+// body.addEventListener("touchend", function () {
+//   if (devHoldTimer) {
+//     clearTimeout(devHoldTimer);
+//   }
+// });
 
-function askForDevSpecialModePassword() {
-  let tempVpass = prompt("");
-  // if cancel is pressed
-  if (!tempVpass) {
-    return 0;
-  }
-  while (tempVpass !== V_CHECK_PASS) {
-    tempVpass = prompt("");
-  }
-  vpass = tempVpass;
-  return 1;
-}
+// function askForDevSpecialModePassword() {
+//   let tempVpass = prompt("");
+//   // if cancel is pressed
+//   if (!tempVpass) {
+//     return 0;
+//   }
+//   while (tempVpass !== V_CHECK_PASS) {
+//     tempVpass = prompt("");
+//   }
+//   vpass = tempVpass;
+//   return 1;
+// }
 
-function activateDevSpecialMode() {
-  totalSub = 0;
-  perIn.value = "75";
-  body.classList = "login";
-  history.pushState({ page: "login" }, "", "?page=login");
-  mode = history.state.page.includes("auto") ? "auto" : "manual";
-  isGoingBackAllowed = true;
+// function activateDevSpecialMode() {
+//   totalSub = 0;
+//   perIn.value = "75";
+//   body.classList = "login";
+//   history.pushState({ page: "login" }, "", "?page=login");
+//   mode = history.state.page.includes("auto") ? "auto" : "manual";
+//   isGoingBackAllowed = true;
 
-  body.classList = "login";
-  mode = "auto";
-}
+//   body.classList = "login";
+//   mode = "auto";
+// }
 
 // ******************************************************
 
@@ -261,87 +259,87 @@ manualCal.addEventListener("click", function () {
 });
 
 const autoBtnFun = function () {
-  if (vpass === V_CHECK_PASS) {
-    if (!/^\d+$/.test(`${id.value}`) || pw.value == "") {
-      id.value = "";
-      pw.value = "";
-      alert("Id or Password field can not be blank");
-      return 0;
-    }
-    overlay.classList.remove("hide");
-    fetch("https://api.safeleave.me/lectures", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: `${id.value}`,
-        password: `${pw.value}`,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          window.scrollTo(0, 0);
-          timer.style.animationName = "";
-          timer.textContent = "";
-          timerStart();
-          // perIn.value = "75";
-          addSub.classList.add("hide");
-          subjects.style.marginBottom = "100px";
-          subjects.classList.add("disable");
-          id.classList.remove("wrong");
-          pw.classList.remove("wrong");
-          LecName = data.subjects;
-          lecCount = data.total;
-          lecAbs = data.absent;
-          uname = data.name;
-          set = data.set;
-          uid = data.u_id;
-          success = data.success;
-
-          stdName.innerText = "";
-          stdName.innerText = uname;
-          const subCards = document.querySelectorAll(".subCard");
-          for (let i = 1; i < subCards.length; i++) subCards[i].remove();
-
-          for (let i = 0; i < LecName.length - 1; i++) {
-            addSub.insertAdjacentHTML("beforebegin", subTemp);
-          }
-          const subject = document.querySelectorAll(".subName");
-          const tLecs = document.querySelectorAll(".totLec");
-          const abs = document.querySelectorAll(".totAbs");
-          for (let i = 0; i < subject.length; i++) {
-            subject[i].value = LecName[i];
-            subject[i].setAttribute("disabled", "");
-            tLecs[i].value = lecCount[i];
-            abs[i].value = lecAbs[i];
-          }
-
-          totalSub = subject.length;
-
-          overlay.classList.add("hide");
-          body.classList = "addSubBody";
-          history.pushState({ page: "autoSub" }, "", "?page=autoSub");
-          mode = history.state.page.includes("auto") ? "auto" : "manual";
-          pw.value = "";
-          isGoingBackAllowed = true;
-        } else if (
-          data.message.toLowerCase().includes("password") ||
-          data.message.toLowerCase().includes("username") ||
-          data.message.toLowerCase().includes("user name")
-        ) {
-          id.classList.add("wrong");
-          id.value = "";
-          pw.classList.add("wrong");
-          pw.value = "";
-          overlay.classList.add("hide");
-        } else {
-          alert("Not reached to the server. Try again");
-          overlay.classList.add("hide");
-        }
-      });
+  // if (vpass === V_CHECK_PASS) {
+  if (!/^\d+$/.test(`${id.value}`) || pw.value == "") {
+    id.value = "";
+    pw.value = "";
+    alert("Id or Password field can not be blank");
+    return 0;
   }
+  overlay.classList.remove("hide");
+  fetch("https://api.safeleave.me/lectures", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: `${id.value}`,
+      password: `${pw.value}`,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        window.scrollTo(0, 0);
+        timer.style.animationName = "";
+        timer.textContent = "";
+        timerStart();
+        // perIn.value = "75";
+        addSub.classList.add("hide");
+        subjects.style.marginBottom = "100px";
+        subjects.classList.add("disable");
+        id.classList.remove("wrong");
+        pw.classList.remove("wrong");
+        LecName = data.subjects;
+        lecCount = data.total;
+        lecAbs = data.absent;
+        uname = data.name;
+        set = data.set;
+        uid = data.u_id;
+        success = data.success;
+
+        stdName.innerText = "";
+        stdName.innerText = uname;
+        const subCards = document.querySelectorAll(".subCard");
+        for (let i = 1; i < subCards.length; i++) subCards[i].remove();
+
+        for (let i = 0; i < LecName.length - 1; i++) {
+          addSub.insertAdjacentHTML("beforebegin", subTemp);
+        }
+        const subject = document.querySelectorAll(".subName");
+        const tLecs = document.querySelectorAll(".totLec");
+        const abs = document.querySelectorAll(".totAbs");
+        for (let i = 0; i < subject.length; i++) {
+          subject[i].value = LecName[i];
+          subject[i].setAttribute("disabled", "");
+          tLecs[i].value = lecCount[i];
+          abs[i].value = lecAbs[i];
+        }
+
+        totalSub = subject.length;
+
+        overlay.classList.add("hide");
+        body.classList = "addSubBody";
+        history.pushState({ page: "autoSub" }, "", "?page=autoSub");
+        mode = history.state.page.includes("auto") ? "auto" : "manual";
+        pw.value = "";
+        isGoingBackAllowed = true;
+      } else if (
+        data.message.toLowerCase().includes("password") ||
+        data.message.toLowerCase().includes("username") ||
+        data.message.toLowerCase().includes("user name")
+      ) {
+        id.classList.add("wrong");
+        id.value = "";
+        pw.classList.add("wrong");
+        pw.value = "";
+        overlay.classList.add("hide");
+      } else {
+        alert("Not reached to the server. Try again");
+        overlay.classList.add("hide");
+      }
+    });
+  // }
 };
 
 submit.addEventListener("click", autoBtnFun);
@@ -464,7 +462,7 @@ const cardFun = function (name, lec, pre, absnt, percent, leave) {
                             ? "&nbsp&nbsp0"
                             : percent
                         }%</p>
-                    </div>                        
+                    </div>
                     ${
                       percent < Number(perIn.value)
                         ? `<div class="msgBox">Attend ${need} more classes continuously to cross ${Number(
@@ -793,3 +791,12 @@ const setSubjectLeaveDate = function (arr) {
     else subs[i].innerText = arr[i];
   }
 };
+
+autoCal.addEventListener("click", function () {
+  totalSub = 0;
+  perIn.value = "75";
+  body.classList = "login";
+  history.pushState({ page: "login" }, "", "?page=login");
+  mode = history.state.page.includes("auto") ? "auto" : "manual";
+  isGoingBackAllowed = true;
+});
