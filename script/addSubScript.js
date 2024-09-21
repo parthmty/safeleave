@@ -13,6 +13,9 @@ const dateSub = document.getElementById("dateSub");
 const dateHead = document.getElementById("dateHead");
 const retry = document.getElementById("retry");
 
+const captchaImage = document.getElementById("captchaImage");
+const captchaValue = document.getElementById("captchaValue");
+
 const addSub = document.getElementById("addSub");
 const subjects = document.getElementById("subjects");
 const calLeave = document.getElementById("calLeave");
@@ -23,6 +26,9 @@ const timer = document.getElementById("time-box");
 let totalSub = 1;
 let time;
 let clearTime;
+
+const HOST = "https://worker.echocors.workers.dev/";
+let SESSION_DATA = null;
 
 let success = false;
 let x;
@@ -266,8 +272,15 @@ const autoBtnFun = function () {
     alert("Id or Password field can not be blank");
     return 0;
   }
+
+  if (captchaValue.value.trim() === "") {
+    captchaValue.value = "";
+    alert("Captcha Field can not be blank");
+    return 0;
+  }
+
   overlay.classList.remove("hide");
-  fetch("https://api.safeleave.me/lectures", {
+  fetch(HOST + "lectures", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -275,6 +288,8 @@ const autoBtnFun = function () {
     body: JSON.stringify({
       username: `${id.value}`,
       password: `${pw.value}`,
+      captcha: captchaValue.value.trim(),
+      session: SESSION_DATA,
     }),
   })
     .then((res) => res.json())
@@ -297,6 +312,9 @@ const autoBtnFun = function () {
         set = data.set;
         uid = data.u_id;
         success = data.success;
+
+        // New Session Data
+        SESSION_DATA = data.clientData;
 
         stdName.innerText = "";
         stdName.innerText = uname;
@@ -333,6 +351,11 @@ const autoBtnFun = function () {
         id.value = "";
         pw.classList.add("wrong");
         pw.value = "";
+        overlay.classList.add("hide");
+      } else if (data.message.toLowerCase().includes("captcha")) {
+        captchaValue.classList.add("wrong");
+        captchaValue.value = "";
+        loadCaptchaImage();
         overlay.classList.add("hide");
       } else {
         alert("Not reached to the server. Try again");
@@ -538,7 +561,7 @@ const fetchDetails = async function () {
     const totalAbs = document.querySelectorAll(".totAbs");
     let arr = [];
 
-    for (i = 0; i < totalSub; i++) {
+    for (let i = 0; i < totalSub; i++) {
       LecName[i] = subNames[i].value;
       lecCount[i] = totalLecs[i].value;
       lecAbs[i] = totalAbs[i].value;
@@ -677,13 +700,13 @@ const getLeaveDateRangeMask = async function (
   set,
   startDate = new Date(new Date().setDate(new Date().getDate() + 1))
 ) {
-  const timeTableResponse = await fetch("https://api.safeleave.me/timetable", {
+  const timeTableResponse = await fetch(HOST + "timetable", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      u_id: uid,
+      session: SESSION_DATA,
     }),
   });
   const timeTableObj = await timeTableResponse.json();
@@ -751,6 +774,10 @@ pw.addEventListener("keyup", function () {
   pw.classList.remove("wrong");
 });
 
+captchaValue.addEventListener("keyup", function () {
+  captchaValue.classList.remove("wrong");
+});
+
 // timer
 
 const timeClearFun = function () {
@@ -793,6 +820,7 @@ const setSubjectLeaveDate = function (arr) {
 };
 
 autoCal.addEventListener("click", function () {
+  loadCaptchaImage();
   totalSub = 0;
   perIn.value = "75";
   body.classList = "login";
@@ -800,3 +828,21 @@ autoCal.addEventListener("click", function () {
   mode = history.state.page.includes("auto") ? "auto" : "manual";
   isGoingBackAllowed = true;
 });
+
+// Fetch Captcha Image When AutoPage is directly visited
+if (page === "login") {
+  loadCaptchaImage();
+}
+
+function loadCaptchaImage() {
+  // Remove old captcha
+  captchaImage.src = "#";
+
+  // Load New Captcha
+  fetch(HOST + "loginformdata")
+    .then((res) => res.json())
+    .then((data) => {
+      captchaImage.src = data.captchaImage;
+      SESSION_DATA = data.clientData;
+    });
+}
