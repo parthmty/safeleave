@@ -3,7 +3,7 @@
     Safe Leave: Manage your attendance effectively
 </h1>
 
-[![Website](https://img.shields.io/badge/Website-visit-8A2BE2)](https://safeleave.me)
+[![Website](https://img.shields.io/badge/Website-visit-8A2BE2)](https://sfleavez.pages.dev)
 
 **Safe Leave** is a web application designed to help students manage their attendance effectively. It calculates how many days students can safely leave classes without affecting their minimum attendance criteria per subject.
 
